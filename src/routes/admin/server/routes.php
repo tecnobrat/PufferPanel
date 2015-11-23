@@ -885,5 +885,6 @@ $klein->respond('POST', '/admin/server/new/plugin-variables', function($request,
 		),
 		'startup' => $orm->default_startup
 	))->send();
+	return;
 
 });
