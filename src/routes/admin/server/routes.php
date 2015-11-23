@@ -864,7 +864,17 @@ $klein->respond('POST', '/admin/server/new/ip-list', function($request, $respons
 
 $klein->respond('POST', '/admin/server/new/plugin-variables', function($request, $response) use($core) {
 
-	$orm = ORM::forTable('plugins')->selectMany('variables', 'default_startup')->where('slug', $request->param('slug'))->findOne();
+	try {
+		$orm = ORM::forTable('plugins')->selectMany('variables', 'default_startup')->where('slug', $request->param('slug'))->findOne();
+	} catch(\Exception $ex) {
+		Debugger::log($ex);
+		return $response->code(500)->send();
+	}
+	
+	if (!$orm) {
+		Debugger::log('No plugin with the slug '.$request->param('slug').' was found in the system.');
+		return $response->code(500)->send();
+	}
 
 	$response->json(array(
 		'html' => $core->twig->render(
