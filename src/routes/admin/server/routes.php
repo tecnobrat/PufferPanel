@@ -876,15 +876,19 @@ $klein->respond('POST', '/admin/server/new/plugin-variables', function($request,
 		return $response->code(500)->send();
 	}
 
-	$response->json(array(
-		'html' => $core->twig->render(
-			'admin/server/plugin-variables.html',
-			array(
-				'variables' => json_decode($orm->variables, true)
-			)
-		),
-		'startup' => $orm->default_startup
-	))->send();
-	return;
+	try {
+		return $response->json(array(
+			'html' => $core->twig->render(
+				'admin/server/plugin-variables.html',
+				array(
+					'variables' => json_decode($orm->variables, true)
+				)
+			),
+			'startup' => $orm->default_startup
+		))->send();
+	} catch (\Exception $e) {
+		Debugger::log($e);
+		return $response->code(500)->send();
+	}
 
 });
